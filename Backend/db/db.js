@@ -1,17 +1,16 @@
 const mongoose = require("mongoose");
 
-function connectDB() {
-    const dbURI = process.env.DB_CONNECT;
+async function connectDB() {
+    try {
+        const dbURI = process.env.MONGO_URI;
 
-    mongoose
-        .connect(dbURI)
-        .then(() => {
-            console.log("Connected to MongoDB");
-        })
-        .catch((err) => {
-            console.error("Error connecting to MongoDB:", err.message);
-            process.exit(1);
-        });
+        await mongoose.connect(dbURI);
+
+        console.log("✅ Connected to MongoDB");
+    } catch (err) {
+        console.error("❌ Error connecting to MongoDB:", err.message);
+        process.exit(1);
+    }
 }
 
 module.exports = connectDB;

@@ -12,25 +12,30 @@ const ridesRoutes = require('./routes/rides.routes');
 
 const app = express();
 
+// Connect DB
 connectToDb();
 
+// ✅ CORS FIX (IMPORTANT for deployment)
 app.use(cors({
-  origin: ["http://localhost:5173", "http://localhost:5179"],
+  origin: [
+    "http://localhost:5173",
+    "http://localhost:5179",
+    process.env.FRONTEND_URL   // 👈 ADD THIS
+  ],
   credentials: true,
 }));
 
-
+// Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 app.use(cookieParser());
 
-
-
+// Test route
 app.get('/', (req, res) => {
-  res.send('Hello World!');
+  res.send('API is running 🚀');
 });
 
+// Routes
 app.use('/users', userRoutes);
 app.use('/captains', captainRoutes);
 app.use('/rides', ridesRoutes);
