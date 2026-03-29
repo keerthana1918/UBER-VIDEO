@@ -1,50 +1,48 @@
-import { useState , useContext } from "react"
-import { Link } from "react-router-dom"
+import { useState, useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { UserDataContext } from "../context/UserContext";
-import { useNavigate } from "react-router-dom";
-
 
 const UserLogin = () => {
-  const [Email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [userData, setUserData] = useState({})
-   const navigate = useNavigate();
+  const [Email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
-    const { user, setUser } = useContext(UserDataContext);
+  const { setUser } = useContext(UserDataContext);
+
   const submitHandler = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const payload = {
-    email: Email,
-    password: password,
+    const payload = {
+      email: Email,
+      password: password,
+    };
+
+    try {
+      const API = import.meta.env.VITE_API_URL;
+
+      const res = await axios.post(
+        `${API}/api/user/login`,
+        payload
+      );
+
+      console.log("Login successful:", res.data);
+
+      setUser(res.data.user);
+      localStorage.setItem("token", res.data.token);
+
+      navigate("/home");
+    } catch (error) {
+      console.error("Login failed:", error.response?.data || error.message);
+      alert("Invalid email or password");
+    }
+
+    setEmail("");
+    setPassword("");
   };
 
-  try {
-    const res = await axios.post(
-      `${import.meta.env.VITE_BASE_URL}/users/login`,
-      payload
-    );
-
-    console.log("Login successful:", res.data);
-
-    setUser(res.data.user); // context
-    localStorage.setItem("token", res.data.token);
-
-    navigate("/home");
-  } catch (error) {
-    console.error("Login failed:", error.response?.data || error.message);
-    alert("Invalid email or password");
-  }
-
-  setEmail("");
-  setPassword("");
-}
-
-
-
   return (
-   <div className="p-7 flex flex-col h-screen justify-between">
+    <div className="p-7 flex flex-col h-screen justify-between">
       <div>
         <img
           className="w-16 mb-10"
@@ -93,14 +91,14 @@ const UserLogin = () => {
 
       <div>
         <Link
-  to="/captain/login"
-  className="block bg-[#10b461] mt-8 text-white font-semibold rounded px-4 py-2 w-full text-lg text-center"
->
-  Sign in as Captain
-</Link>
+          to="/captain/login"
+          className="block bg-[#10b461] mt-8 text-white font-semibold rounded px-4 py-2 w-full text-lg text-center"
+        >
+          Sign in as Captain
+        </Link>
       </div>
-    </div> 
-  )
-}
+    </div>
+  );
+};
 
-export default UserLogin
+export default UserLogin;
